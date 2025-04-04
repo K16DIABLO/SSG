@@ -23,7 +23,8 @@ void save_result(char* filename, std::vector<std::vector<unsigned> >& results) {
 
 int main(int argc, char** argv) {
   if (argc < 9) {
-    std::cout << "./run data_file query_file groundtruth_file ssg_path L K result_path num_threads [seed]"
+    std::cout << argv[0]
+              << " data_file query_file groundtruth_file ssg_path L K result_path num_threads [seed]"
               << std::endl;
     exit(-1);
   }
