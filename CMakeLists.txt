@@ -23,12 +23,16 @@ else()
     message(FATAL_ERROR "OpenMP is required")
 endif()
 
+#Eigen
+find_package(Eigen3 REQUIRED)
+include_directories(${EIGEN3_INCLUDE_DIR})
+
 # Python binding
 add_subdirectory(third_party/pybind11)
+
+# Compile flags
+add_definitions(-std=c++11 -O3 -lboost -ltcmalloc_minimal -march=native -Wall -DINFO)
 
 # Source codes
 add_subdirectory(src)
 add_subdirectory(tests)
-
-# Compile flags
-add_definitions(-std=c++11 -O3 -lboost -ltcmalloc_minimal -march=native -Wall -DINFO)

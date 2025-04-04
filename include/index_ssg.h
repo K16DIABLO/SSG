@@ -13,6 +13,8 @@
 #include "parameters.h"
 #include "util.h"
 
+#include <Eigen/Dense>
+
 namespace efanna2e {
 
 class IndexSSG : public Index {
@@ -31,8 +33,19 @@ class IndexSSG : public Index {
   virtual void Search(const float *query, const float *x, size_t k,
                       const Parameters &parameters, unsigned *indices) override;
   void SearchWithOptGraph(const float *query, size_t K,
-                          const Parameters &parameters, unsigned *indices);
+                          const Parameters &parameters, unsigned *indices,
+                          uint32_t* hashed_query_buffer);
   void OptimizeGraph(const float *data);
+
+  // Sungjun Jung: ADA-NNS functions
+  void SetTau(const float tau) { tau_ = tau; }
+  void SetHashBitwidth(const uint64_t hash_bitwidth) { hash_bitwidth_ = hash_bitwidth; }
+  void GenerateHashFunction (char* file_name);
+  void GenerateHashedSet (char* file_name, float* data);
+  bool ReadHashFunction (char* file_name);
+  bool ReadHashedSet (char* file_name);
+  void QueryHash(const float* query, uint32_t* hashed_query, const uint64_t num_query);
+  uint32_t CandidateSelection(const float query_norm, const uint32_t* hashed_query, std::vector<SimpleNeighbor>& selected_pool, boost::dynamic_bitset<>& flags, const uint32_t* neighbors);
 
  protected:
   typedef std::vector<std::vector<unsigned>> CompactGraph;
@@ -75,6 +88,14 @@ class IndexSSG : public Index {
   size_t data_len;
   size_t neighbor_len;
   KNNGraph nnd_graph;
+
+  // Sungjun Jung: Variables for ADA-NNS
+  float tau_; // candidate selection threshold
+              // _tau = 0.3 means only top 30% of neighbors 
+              // having the smallest angular distance to the query are selected
+  uint32_t hash_bitwidth_;
+  float* hash_function_;
+  uint32_t* hashed_set_;
 };
 
 }  // namespace efanna2e

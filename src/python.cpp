@@ -109,7 +109,7 @@ PYBIND11_MODULE(pyssg, m) {
             std::vector<unsigned> indices(k);
 
             // Do Search
-            index.SearchWithOptGraph(query.data(), k, params, indices.data());
+            index.SearchWithOptGraph(query.data(), k, params, indices.data(), nullptr);
 
             return indices;
         });
