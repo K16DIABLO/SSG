@@ -52,6 +52,30 @@ float* load_data(const char* filename, unsigned& num, unsigned& dim) {
   return data;
 }
 
+// Sungjun Jung: load_data for groundtruth
+uint32_t* load_data_ivecs(const char* filename, uint32_t& num, uint32_t& dim) { 
+  std::ifstream in(filename, std::ios::binary);
+  if (!in.is_open()) {
+    std::cerr << "Open file error" << std::endl;
+    exit(-1);
+  }
+  in.read((char*)&dim, 4);
+  in.seekg(0, std::ios::end);
+  std::ios::pos_type ss = in.tellg();
+  size_t fsize = (size_t)ss;
+  num = (uint32_t)(fsize / (dim + 1) / 4);
+  uint32_t* data = new uint32_t[(size_t)num * (size_t)dim];
+
+  in.seekg(0, std::ios::beg);
+  for (size_t i = 0; i < num; i++) {
+    in.seekg(4, std::ios::cur);
+    in.read((char*)(data + i * dim), dim * 4);
+  }
+  in.close();
+
+  return data;
+}
+
 float* data_align(float* data_ori, unsigned point_num, unsigned& dim) {
 #ifdef __GNUC__
 #ifdef __AVX__
